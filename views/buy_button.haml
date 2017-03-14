@@ -1,0 +1,27 @@
+
+
+:javascript
+  if (!window.Buy) {
+      window.buy = function(item) {
+         var list=document.getElementsByClassName('buy')
+         for (var i = 0; i < list.length; i++) {
+             list[i].disabled=true;
+         }
+         var xhr=new XMLHttpRequest();
+         xhr.onreadystatechange = function() {
+              if (this.readyState == 4 && this.status == 200) {
+                  var createdOrder = JSON.parse(this.responseText);
+                 if(window.prepareOrder){
+                  window.prepareOrder(createdOrder.uri)
+                 }
+              }
+          };
+          xhr.open('POST', '/buy-button/order');
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify({"product":item}));
+
+       }
+    }
+%button.buy{:onclick=>"window.buy('#{uri}')"}
+  Buy
+
