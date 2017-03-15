@@ -29,8 +29,8 @@
            xhr.onreadystatechange = function() {
               if (this.readyState == 4 && this.status == 200) {
                   var createdOrder = JSON.parse(this.responseText);
-                 if(window.prepareOrder){
-                  window.prepareOrder(createdOrder.uri)
+                 if(shopping_web.core.launchOrder){
+                  shopping_web.core.launchOrder(createdOrder.uri)
                  }
               }
           };
