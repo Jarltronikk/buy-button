@@ -63,8 +63,19 @@ post '/buy-button/order' do
       unblock.enq true
     end
   end
+  failed_queue = channel.queue("", :exclusive => true, :durable=>false)
+  failed_queue.bind($orderExchange, :routing_key=>"rejected.order")
+  fail_subscriber = failed_queue.subscribe() do |delivery_info, properties, body|
+    message=JSON.parse body
+    if(message["id"]==id)
+      puts "THIS FAILED:"
+      puts payload
+      unblock.enq true
+    end
+  end
   $orderExchange.publish('{"id":"'+id+'","items":[{"product":"'+payload['product']+'","Quantity":1}]}', :routing_key =>"create.order")
   unblock.deq
   subscriber.cancel
+  fail_subscriber.cancel
   response.to_json
 end
