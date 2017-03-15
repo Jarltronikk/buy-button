@@ -70,10 +70,17 @@ post '/buy-button/order' do
     if(message["id"]==id)
       puts "THIS FAILED:"
       puts payload
+      response[:failure]="hmmmmm"
       unblock.enq true
     end
   end
   $orderExchange.publish('{"id":"'+id+'","items":[{"product":"'+payload['product']+'","Quantity":1}]}', :routing_key =>"create.order")
+  Thread.new{
+    sleep 10
+    puts "TIMEOUT"
+    response[:failure]="Timeout"
+    unblock.enq true
+  }
   unblock.deq
   subscriber.cancel
   fail_subscriber.cancel
