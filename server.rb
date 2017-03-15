@@ -35,6 +35,9 @@ get '/buy-button' do
   haml :buy_button ,:locals=>{:uri=>params['product']}
 end
 
+get '/buy-button/buy-button-component' do
+  haml :buy_button_component
+end
 
 get '/buy-button/register-hack' do
   $base_uri=request.base_url
