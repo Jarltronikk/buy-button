@@ -1,6 +1,6 @@
 %template#buy-button-template
   .buy_button
-    %button.buy
+    %button.buy.btn.btn-default
       Buy
 
 
@@ -8,23 +8,21 @@
 :javascript
   (function (){
    var currentScript = document.currentScript
+    var template = currentScript
+            .ownerDocument
+            .getElementById('buy-button-template')
+            .content
     customElements.define('buy-button',
     class extends HTMLElement {
       constructor() {
         super()
-        var template = currentScript
-            .ownerDocument
-            .getElementById('buy-button-template')
-            .content
-        var shadowRoot = this.attachShadow({mode: 'open'})
-        shadowRoot.appendChild(template.cloneNode(true))
+      }
+      connectedCallback() {
+        const temp = document.importNode(template, true);
+        this.appendChild(temp);
         var product=this.getAttribute('product')
-        shadowRoot.querySelector('.buy').onclick=
+        this.querySelector('.buy').onclick=
           function() {
-           var list=document.getElementsByClassName('buy')
-           for (var i = 0; i < list.length; i++) {
-               list[i].disabled=true;
-           }
            var xhr=new XMLHttpRequest();
            xhr.onreadystatechange = function() {
               if (this.readyState == 4 && this.status == 200) {
@@ -37,7 +35,8 @@
           xhr.open('POST', '/buy-button/order');
           xhr.setRequestHeader('Content-Type', 'application/json');
           xhr.send(JSON.stringify({"product":product}));
-         }
+      }
+
       }
     }
     )
